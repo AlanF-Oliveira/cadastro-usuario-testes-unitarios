@@ -1,7 +1,7 @@
 package com.javanauta.cadastrousuario.api.response;
 
 public class EnderecoResponseDTOFixture {
-    public static EnderecoResponseDTO build(String rua,
+    public static EnderecoResponseDTO build (String rua,
 
                                             Long numero,
 

@@ -1,41 +1,32 @@
 package com.javanauta.cadastrousuario.api.converter;
 
-import com.javanauta.cadastrousuario.api.request.EnderecoRequestDTO;
-import com.javanauta.cadastrousuario.api.request.EnderecoRequestDTOFixture;
-import com.javanauta.cadastrousuario.api.request.UsuarioRequestDTO;
-import com.javanauta.cadastrousuario.api.request.UsuarioRequestDTOFixture;
+import com.javanauta.cadastrousuario.api.response.EnderecoResponseDTO;
+import com.javanauta.cadastrousuario.api.response.EnderecoResponseDTOFixture;
+import com.javanauta.cadastrousuario.api.response.UsuarioResponseDTO;
+import com.javanauta.cadastrousuario.api.response.UsuarioResponseDTOFixture;
 import com.javanauta.cadastrousuario.infrastructure.entities.EnderecoEntity;
 import com.javanauta.cadastrousuario.infrastructure.entities.UsuarioEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mapstruct.factory.Mappers;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doReturn;
 
-@ExtendWith(MockitoExtension.class)
-public class UsuarioConverterTest {
+public class UsuarioMapperTest {
 
-    @InjectMocks
-    UsuarioConverter usuarioConverter;
 
-    @Mock
-    Clock clock;
+    UsuarioMapper usuarioMapper;
     UsuarioEntity usuarioEntity;
     EnderecoEntity enderecoEntity;
-    UsuarioRequestDTO usuarioRequestDTO;
-    EnderecoRequestDTO enderecoRequestDTO;
+    UsuarioResponseDTO usuarioResponseDTO;
+    EnderecoResponseDTO enderecoResponseDTO;
     LocalDateTime dataHora;
 
     @BeforeEach
     public void setup() {
+        usuarioMapper = Mappers.getMapper(UsuarioMapper.class);
         dataHora = LocalDateTime.of(2026, 4, 20, 17, 55, 22);
         enderecoEntity = EnderecoEntity.builder()
                 .rua("Rua Spring Boot")
@@ -46,13 +37,14 @@ public class UsuarioConverterTest {
                 .complemento("Apt 5")
                 .build();
         usuarioEntity = UsuarioEntity.builder()
+                .id(123L)
                 .nome("Usuario")
                 .documento("2345674")
                 .email("alanf@gmail.com")
                 .dataCadastro(dataHora)
                 .endereco(enderecoEntity)
                 .build();
-        enderecoRequestDTO = EnderecoRequestDTOFixture.build(
+        enderecoResponseDTO = EnderecoResponseDTOFixture.build(
                 "Rua Spring Boot",
                 23L,
                 "Bairro Java",
@@ -60,22 +52,19 @@ public class UsuarioConverterTest {
                 "Javaland",
                 "60456543"
         );
-        usuarioRequestDTO = UsuarioRequestDTOFixture.build(
+        usuarioResponseDTO = UsuarioResponseDTOFixture.build(
+                123L,
                 "Usuario",
                 "alanf@gmail.com",
                 "2345674",
-                enderecoRequestDTO
+                enderecoResponseDTO
         );
-        ZoneId zoneId = ZoneId.systemDefault();
-        Clock fixedClock = Clock.fixed(dataHora.atZone(zoneId).toInstant(), zoneId);
-        doReturn(fixedClock.instant()).when(clock).instant();
-        doReturn(fixedClock.getZone()).when(clock).getZone();
     }
 
     @Test
-    void deveCorverterParaUsuarioEntity() {
-        UsuarioEntity entity = usuarioConverter.paraUsuarioEntity(usuarioRequestDTO);
-        assertEquals(usuarioEntity, entity);
+    void deveConverterParaUsuarioResponseDTO() {
+        UsuarioResponseDTO response = usuarioMapper.paraUsuarioResponseDTO(usuarioEntity);
+        assertEquals(usuarioResponseDTO, response);
 
     }
 }
