@@ -2,8 +2,6 @@ package com.javanauta.cadastrousuario.api.converter;
 
 import com.javanauta.cadastrousuario.api.request.EnderecoRequestDTO;
 import com.javanauta.cadastrousuario.api.request.UsuarioRequestDTO;
-import com.javanauta.cadastrousuario.api.response.EnderecoResponseDTO;
-import com.javanauta.cadastrousuario.api.response.UsuarioResponseDTO;
 import com.javanauta.cadastrousuario.infrastructure.entities.EnderecoEntity;
 import com.javanauta.cadastrousuario.infrastructure.entities.UsuarioEntity;
 import lombok.RequiredArgsConstructor;
