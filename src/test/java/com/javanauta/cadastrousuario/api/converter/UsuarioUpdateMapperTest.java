@@ -1,9 +1,9 @@
 package com.javanauta.cadastrousuario.api.converter;
 
-import com.javanauta.cadastrousuario.api.response.EnderecoResponseDTO;
-import com.javanauta.cadastrousuario.api.response.EnderecoResponseDTOFixture;
-import com.javanauta.cadastrousuario.api.response.UsuarioResponseDTO;
-import com.javanauta.cadastrousuario.api.response.UsuarioResponseDTOFixture;
+import com.javanauta.cadastrousuario.api.request.EnderecoRequestDTO;
+import com.javanauta.cadastrousuario.api.request.EnderecoRequestDTOFixture;
+import com.javanauta.cadastrousuario.api.request.UsuarioRequestDTO;
+import com.javanauta.cadastrousuario.api.request.UsuarioRequestDTOFixture;
 import com.javanauta.cadastrousuario.infrastructure.entities.EnderecoEntity;
 import com.javanauta.cadastrousuario.infrastructure.entities.UsuarioEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,19 +14,18 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class UsuarioMapperTest {
-
-
-    UsuarioMapper usuarioMapper;
+public class UsuarioUpdateMapperTest {
+    UsuarioUpdateMapper usuarioMapper;
+    UsuarioEntity usuarioEntityEsperado;
     UsuarioEntity usuarioEntity;
     EnderecoEntity enderecoEntity;
-    UsuarioResponseDTO usuarioResponseDTO;
-    EnderecoResponseDTO enderecoResponseDTO;
+    UsuarioRequestDTO usuarioRequestDTO;
+    EnderecoRequestDTO enderecoRequestDTO;
     LocalDateTime dataHora;
 
     @BeforeEach
     public void setup() {
-        usuarioMapper = Mappers.getMapper(UsuarioMapper.class);
+        usuarioMapper = Mappers.getMapper(UsuarioUpdateMapper.class);
         dataHora = LocalDateTime.of(2026, 4, 20, 17, 55, 22);
         enderecoEntity = EnderecoEntity.builder()
                 .rua("Rua Spring Boot")
@@ -44,7 +43,7 @@ public class UsuarioMapperTest {
                 .dataCadastro(dataHora)
                 .endereco(enderecoEntity)
                 .build();
-        enderecoResponseDTO = EnderecoResponseDTOFixture.build(
+        enderecoRequestDTO = EnderecoRequestDTOFixture.build(
                 "Rua Spring Boot",
                 23L,
                 "Bairro Java",
@@ -52,19 +51,27 @@ public class UsuarioMapperTest {
                 "Javaland",
                 "60456543"
         );
-        usuarioResponseDTO = UsuarioResponseDTOFixture.build(
-                123L,
-                "Usuario",
-                "alanf@gmail.com",
-                "2345674",
-                enderecoResponseDTO
+        usuarioRequestDTO = UsuarioRequestDTOFixture.build(
+                "Usuario Teste",
+                null,
+                "2345674000",
+                enderecoRequestDTO
         );
+
+        usuarioEntityEsperado = UsuarioEntity.builder()
+                .id(123L)
+                .nome("Usuario Teste")
+                .email("alanf@gmail.com")
+                .documento("2345674000")
+                .dataCadastro(dataHora)
+                .endereco(enderecoEntity)
+                .build();
     }
 
     @Test
-    void deveConverterParaUsuarioResponseDTO() {
-        UsuarioResponseDTO dto = usuarioMapper.paraUsuarioResponseDTO(usuarioEntity);
-        assertEquals(usuarioResponseDTO, dto);
+    void deveConverterParaUsuarioEntity() {
+        UsuarioEntity entity = usuarioMapper.updateUsuarioFromDTO(usuarioRequestDTO, usuarioEntity);
+        assertEquals(usuarioEntityEsperado, entity);
 
     }
 }
