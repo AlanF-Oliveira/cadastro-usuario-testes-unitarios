@@ -195,20 +195,18 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    void deveGerarExcecaoCasoOcorraErroAoGravarUsuario() {
-        when(usuarioConverter.paraUsuarioEntity(usuarioRequestDTO)).thenReturn(usuarioEntity);
-        when(usuarioRepository.saveAndFlush(usuarioEntity)).thenThrow(
-                new RuntimeException("Falha ao gravar os dados do usuário."));
+    void deveGerarExcecaoCasoOcorraErroAoBuscarUsuario() {
+        when(usuarioRepository.findByEmail(email)).thenThrow(
+                new RuntimeException("Falha ao buscar dados de usuário."));
         BusinessException e = assertThrows(BusinessException.class,
-                () -> usuarioService.gravarUsuarios(usuarioRequestDTO));
+                () -> usuarioService.atualizaCadastro(usuarioRequestDTO));
         assertThat(e, notNullValue());
         assertThat(e.getMessage(), is("Erro ao gravar dados de usuário"));
         assertThat(e.getCause().getClass(), is(RuntimeException.class));
-        assertThat(e.getCause().getMessage(), is("Falha ao gravar os dados do usuário."));
-        verify(usuarioConverter).paraUsuarioEntity(usuarioRequestDTO);
-        verify(usuarioRepository).saveAndFlush(usuarioEntity);
-        verifyNoInteractions(usuarioMapper);
-        verifyNoMoreInteractions(usuarioRepository, usuarioConverter);
+        assertThat(e.getCause().getMessage(), is("Falha ao buscar dados de usuário."));
+        verify(usuarioRepository).findByEmail(email);
+        verifyNoInteractions(usuarioMapper, usuarioUpdateMapper);
+        verifyNoMoreInteractions(usuarioRepository);
 
     }
 
