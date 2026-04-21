@@ -7,9 +7,13 @@ import com.javanauta.cadastrousuario.api.request.EnderecoRequestDTO;
 import com.javanauta.cadastrousuario.api.request.EnderecoRequestDTOFixture;
 import com.javanauta.cadastrousuario.api.request.UsuarioRequestDTO;
 import com.javanauta.cadastrousuario.api.request.UsuarioRequestDTOFixture;
+import com.javanauta.cadastrousuario.api.response.EnderecoResponseDTO;
+import com.javanauta.cadastrousuario.api.response.EnderecoResponseDTOFixture;
 import com.javanauta.cadastrousuario.api.response.UsuarioResponseDTO;
+import com.javanauta.cadastrousuario.api.response.UsuarioResponseDTOFixture;
 import com.javanauta.cadastrousuario.infrastructure.entities.EnderecoEntity;
 import com.javanauta.cadastrousuario.infrastructure.entities.UsuarioEntity;
+import com.javanauta.cadastrousuario.infrastructure.exceptions.BusinessException;
 import com.javanauta.cadastrousuario.infrastructure.repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +24,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +52,7 @@ public class UsuarioServiceTest {
     UsuarioRequestDTO usuarioRequestDTO;
     EnderecoRequestDTO enderecoRequestDTO;
     UsuarioResponseDTO usuarioResponseDTO;
+    EnderecoResponseDTO enderecoResponseDTO;
     LocalDateTime dataHora;
 
     @BeforeEach
@@ -79,6 +87,22 @@ public class UsuarioServiceTest {
                 "2345674",
                 enderecoRequestDTO
         );
+        enderecoResponseDTO = EnderecoResponseDTOFixture.build(
+                "Rua Spring Boot",
+                23L,
+                "Bairro Java",
+                "Apt 5",
+                "Javaland",
+                "60456543"
+        );
+        usuarioResponseDTO = UsuarioResponseDTOFixture.build(
+                1452L,
+                "Usuario",
+                "alanf@gmail.com",
+                "2345674",
+                enderecoResponseDTO
+        );
+
 
     }
 
@@ -100,6 +124,20 @@ public class UsuarioServiceTest {
     void deveGravarUsuarioComSucesso(){
         when(converter.paraUsuarioEntity(usuarioRequestDTO)).thenReturn(usuarioEntity);
         when(repository.saveAndFlush(usuarioEntity)).thenReturn(usuarioEntity);
-        when(usuarioMapper.paraUsuarioResponseDTO(usuarioEntity)).
+        when(usuarioMapper.paraUsuarioResponseDTO(usuarioEntity)).thenReturn(usuarioResponseDTO);
+        UsuarioResponseDTO dto = service.gravarUsuarios(usuarioRequestDTO);
+        assertEquals(dto, usuarioResponseDTO);
+        verify(converter).paraUsuarioEntity(usuarioRequestDTO);
+        verify(repository).saveAndFlush(usuarioEntity);
+        verify(usuarioMapper).paraUsuarioResponseDTO(usuarioEntity);
+        verifyNoMoreInteractions(repository, converter, usuarioMapper);
     }
+
+    @Test
+    void naoDeveSalvarUsuariosCasoUsuarioRequestDTONull(){
+        BusinessException e = assertThrows(BusinessException.class, () -> service.gravarUsuarios(null));
+        assertThat(e, notNullValue());
+    }
+
+
 }
