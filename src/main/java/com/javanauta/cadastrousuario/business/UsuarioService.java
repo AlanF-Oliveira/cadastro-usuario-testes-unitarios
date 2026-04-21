@@ -9,10 +9,7 @@ import com.javanauta.cadastrousuario.infrastructure.entities.UsuarioEntity;
 import com.javanauta.cadastrousuario.infrastructure.exceptions.BusinessException;
 import com.javanauta.cadastrousuario.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static org.springframework.util.Assert.notNull;
 

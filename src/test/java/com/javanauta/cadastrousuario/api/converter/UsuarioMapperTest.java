@@ -63,8 +63,8 @@ public class UsuarioMapperTest {
 
     @Test
     void deveConverterParaUsuarioResponseDTO() {
-        UsuarioResponseDTO response = usuarioMapper.paraUsuarioResponseDTO(usuarioEntity);
-        assertEquals(usuarioResponseDTO, response);
+        UsuarioResponseDTO dto = usuarioMapper.paraUsuarioResponseDTO(usuarioEntity);
+        assertEquals(usuarioResponseDTO, dto);
 
     }
 }
