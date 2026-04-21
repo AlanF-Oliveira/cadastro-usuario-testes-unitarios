@@ -25,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,13 +34,13 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class UsuarioServiceTest {
     @InjectMocks
-    UsuarioService service;
+    UsuarioService usuarioService;
 
     @Mock
-    private UsuarioRepository repository;
+    private UsuarioRepository usuarioRepository;
 
     @Mock
-    UsuarioConverter converter;
+    UsuarioConverter usuarioConverter;
 
     @Mock
     UsuarioUpdateMapper usuarioUpdateMapper;
@@ -113,30 +114,35 @@ public class UsuarioServiceTest {
 
     @Test
     void deveSalvarUsuarioComSucesso() {
-        when(repository.saveAndFlush(usuarioEntity)).thenReturn(usuarioEntity);
-        UsuarioEntity entity = service.salvaUsuario(usuarioEntity);
+        when(usuarioRepository.saveAndFlush(usuarioEntity)).thenReturn(usuarioEntity);
+        UsuarioEntity entity = usuarioService.salvaUsuario(usuarioEntity);
         assertEquals(entity, usuarioEntity);
-        verify(repository).saveAndFlush(usuarioEntity);
-        verifyNoMoreInteractions(repository);
+        verify(usuarioRepository).saveAndFlush(usuarioEntity);
+        verifyNoMoreInteractions(usuarioRepository);
     }
 
     @Test
     void deveGravarUsuarioComSucesso(){
-        when(converter.paraUsuarioEntity(usuarioRequestDTO)).thenReturn(usuarioEntity);
-        when(repository.saveAndFlush(usuarioEntity)).thenReturn(usuarioEntity);
+        when(usuarioConverter.paraUsuarioEntity(usuarioRequestDTO)).thenReturn(usuarioEntity);
+        when(usuarioRepository.saveAndFlush(usuarioEntity)).thenReturn(usuarioEntity);
         when(usuarioMapper.paraUsuarioResponseDTO(usuarioEntity)).thenReturn(usuarioResponseDTO);
-        UsuarioResponseDTO dto = service.gravarUsuarios(usuarioRequestDTO);
+        UsuarioResponseDTO dto = usuarioService.gravarUsuarios(usuarioRequestDTO);
         assertEquals(dto, usuarioResponseDTO);
-        verify(converter).paraUsuarioEntity(usuarioRequestDTO);
-        verify(repository).saveAndFlush(usuarioEntity);
+        verify(usuarioConverter).paraUsuarioEntity(usuarioRequestDTO);
+        verify(usuarioRepository).saveAndFlush(usuarioEntity);
         verify(usuarioMapper).paraUsuarioResponseDTO(usuarioEntity);
-        verifyNoMoreInteractions(repository, converter, usuarioMapper);
+        verifyNoMoreInteractions(usuarioRepository, usuarioConverter, usuarioMapper);
     }
 
     @Test
     void naoDeveSalvarUsuariosCasoUsuarioRequestDTONull(){
-        BusinessException e = assertThrows(BusinessException.class, () -> service.gravarUsuarios(null));
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> usuarioService.gravarUsuarios(null));
         assertThat(e, notNullValue());
+        assertThat(e.getMessage(), is("Erro ao gravar dados de usuário"));
+        assertThat(e.getCause(), notNullValue());
+        assertThat(e.getCause().getMessage(), is("Os dados do usuário são obrigatórios"));
+        verifyNoInteractions(usuarioMapper, usuarioConverter, usuarioRepository);
     }
 
 
