@@ -184,14 +184,14 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    void naoDeveSalvarUsuariosCasoUsuarioRequestDTONull() {
+    void naoDeveAtualizarDadosDeUsuariosCasoUsuarioRequestDTONull() {
         BusinessException e = assertThrows(BusinessException.class,
-                () -> usuarioService.gravarUsuarios(null));
+                () -> usuarioService.atualizaCadastro(null));
         assertThat(e, notNullValue());
         assertThat(e.getMessage(), is("Erro ao gravar dados de usuário"));
         assertThat(e.getCause(), notNullValue());
         assertThat(e.getCause().getMessage(), is("Os dados do usuário são obrigatórios"));
-        verifyNoInteractions(usuarioMapper, usuarioConverter, usuarioRepository);
+        verifyNoInteractions(usuarioMapper, usuarioUpdateMapper, usuarioRepository);
     }
 
     @Test
