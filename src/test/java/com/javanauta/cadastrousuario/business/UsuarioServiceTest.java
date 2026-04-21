@@ -210,7 +210,15 @@ public class UsuarioServiceTest {
 
     }
 
-
+    @Test
+    void deveBuscarDadosDeUsuarioComSucesso(){
+        when(usuarioRepository.findByEmail(email)).thenReturn(usuarioEntity);
+        when(usuarioMapper.paraUsuarioResponseDTO(usuarioEntity)).thenReturn(usuarioResponseDTO);
+        UsuarioResponseDTO dto = usuarioService.buscaDadosUsuario(email);
+        verify(usuarioRepository).findByEmail(email);
+        verify(usuarioMapper).paraUsuarioResponseDTO(usuarioEntity);
+        assertEquals(dto, usuarioResponseDTO);
+    }
 
 
 
