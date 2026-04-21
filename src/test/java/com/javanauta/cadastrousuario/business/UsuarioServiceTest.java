@@ -55,6 +55,7 @@ public class UsuarioServiceTest {
     UsuarioResponseDTO usuarioResponseDTO;
     EnderecoResponseDTO enderecoResponseDTO;
     LocalDateTime dataHora;
+    String email;
 
     @BeforeEach
     public void setup() {
@@ -103,7 +104,7 @@ public class UsuarioServiceTest {
                 "2345674",
                 enderecoResponseDTO
         );
-
+        email = "alanf@gmail.com";
 
     }
 
@@ -162,6 +163,57 @@ public class UsuarioServiceTest {
         verifyNoMoreInteractions(usuarioRepository, usuarioConverter);
 
     }
+
+    //----------
+
+
+    @Test
+    void deveAtualizarCadastroDeUsuarioComSucesso() {
+        when(usuarioRepository.findByEmail(email)).thenReturn(usuarioEntity);
+        when(usuarioUpdateMapper.updateUsuarioFromDTO(usuarioRequestDTO, usuarioEntity)).thenReturn(usuarioEntity);
+        when(usuarioRepository.saveAndFlush(usuarioEntity)).thenReturn(usuarioEntity);
+        when(usuarioMapper.paraUsuarioResponseDTO(usuarioEntity)).thenReturn(usuarioResponseDTO);
+
+        UsuarioResponseDTO dto = usuarioService.atualizaCadastro(usuarioRequestDTO);
+
+        assertEquals(dto, usuarioResponseDTO);
+        verify(usuarioRepository).findByEmail(email);
+        verify(usuarioUpdateMapper).updateUsuarioFromDTO(usuarioRequestDTO, usuarioEntity);
+        verify(usuarioMapper).paraUsuarioResponseDTO(usuarioEntity);
+        verifyNoMoreInteractions(usuarioRepository, usuarioConverter, usuarioMapper);
+    }
+
+    @Test
+    void naoDeveSalvarUsuariosCasoUsuarioRequestDTONull() {
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> usuarioService.gravarUsuarios(null));
+        assertThat(e, notNullValue());
+        assertThat(e.getMessage(), is("Erro ao gravar dados de usuário"));
+        assertThat(e.getCause(), notNullValue());
+        assertThat(e.getCause().getMessage(), is("Os dados do usuário são obrigatórios"));
+        verifyNoInteractions(usuarioMapper, usuarioConverter, usuarioRepository);
+    }
+
+    @Test
+    void deveGerarExcecaoCasoOcorraErroAoGravarUsuario() {
+        when(usuarioConverter.paraUsuarioEntity(usuarioRequestDTO)).thenReturn(usuarioEntity);
+        when(usuarioRepository.saveAndFlush(usuarioEntity)).thenThrow(
+                new RuntimeException("Falha ao gravar os dados do usuário."));
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> usuarioService.gravarUsuarios(usuarioRequestDTO));
+        assertThat(e, notNullValue());
+        assertThat(e.getMessage(), is("Erro ao gravar dados de usuário"));
+        assertThat(e.getCause().getClass(), is(RuntimeException.class));
+        assertThat(e.getCause().getMessage(), is("Falha ao gravar os dados do usuário."));
+        verify(usuarioConverter).paraUsuarioEntity(usuarioRequestDTO);
+        verify(usuarioRepository).saveAndFlush(usuarioEntity);
+        verifyNoInteractions(usuarioMapper);
+        verifyNoMoreInteractions(usuarioRepository, usuarioConverter);
+
+    }
+
+
+
 
 
 }
