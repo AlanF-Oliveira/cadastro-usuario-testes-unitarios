@@ -220,6 +220,16 @@ public class UsuarioServiceTest {
         assertEquals(dto, usuarioResponseDTO);
     }
 
+    @Test
+    void deveRetornarNullCasoUsuarioNaoEncontrado(){
+        when(usuarioRepository.findByEmail(email)).thenReturn(null);
+        UsuarioResponseDTO dto = usuarioService.buscaDadosUsuario(email);
+        assertEquals(dto, null);
+        verify(usuarioRepository).findByEmail(email);
+        verifyNoInteractions(usuarioMapper);
+
+    }
+
 
 
 }
