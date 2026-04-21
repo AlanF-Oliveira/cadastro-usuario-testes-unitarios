@@ -230,6 +230,13 @@ public class UsuarioServiceTest {
 
     }
 
+    @Test
+    void deveDeletarDadosDeUsuarioComSucesso(){
+        doNothing().when(usuarioRepository).deleteByEmail(email);
+        usuarioService.deletaDadosUsuario(email);
+        verify(usuarioRepository).deleteByEmail(email);
+    }
+
 
 
 }
