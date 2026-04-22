@@ -154,4 +154,26 @@ public class UsuarioControllerTest {
         ).andExpect(status().isBadRequest());
         verifyNoInteractions(usuarioService);
     }
+
+    @Test
+    void deveDeletarDadosDeUsuariosComSucesso() throws Exception {
+        doNothing().when(usuarioService).deletaDadosUsuario("alanf@gmail.com");
+        mockMvc.perform(delete(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("email", "alanf@gmail.com")
+                .content(json)
+        ).andExpect(status().isAccepted());
+        verify(usuarioService).deletaDadosUsuario("alanf@gmail.com");
+        verifyNoMoreInteractions(usuarioService);
+    }
+
+    @Test
+    void naoDeveDeletarDadosDeUsuariosCasoParametroNullo() throws Exception {
+        mockMvc.perform(delete(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+        verifyNoInteractions(usuarioService);
+    }
 }
