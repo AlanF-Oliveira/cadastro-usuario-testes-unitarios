@@ -236,7 +236,4 @@ public class UsuarioServiceTest {
         usuarioService.deletaDadosUsuario(email);
         verify(usuarioRepository).deleteByEmail(email);
     }
-
-
-
 }
