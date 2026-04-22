@@ -144,6 +144,14 @@ public class UsuarioControllerTest {
         ).andExpect(status().isOk());
         verify(usuarioService).buscaDadosUsuario("alanf@gmail.com");
         verifyNoMoreInteractions(usuarioService);
+    }
 
+    @Test
+    void naoDeveBuscarDadosDeUsuariosCasoParametroNullo() throws Exception {
+        mockMvc.perform(get(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+        verifyNoInteractions(usuarioService);
     }
 }
