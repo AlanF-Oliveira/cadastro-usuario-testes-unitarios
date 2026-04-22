@@ -101,4 +101,13 @@ public class UsuarioControllerTest {
         verify(usuarioService).gravarUsuarios(usuarioRequestDTO);
         verifyNoMoreInteractions(usuarioService);
     }
+
+    @Test
+    void naoDeveGravarDadosDeUsuarioCasoJsonNull() throws Exception {
+        mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+        verifyNoInteractions(usuarioService);
+    }
 }
