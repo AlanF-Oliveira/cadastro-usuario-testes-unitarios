@@ -109,15 +109,10 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    public void testLoginSucess() {
-
-    }
-
-    @Test
     void deveSalvarUsuarioComSucesso() {
         when(usuarioRepository.saveAndFlush(usuarioEntity)).thenReturn(usuarioEntity);
         UsuarioEntity entity = usuarioService.salvaUsuario(usuarioEntity);
-        assertEquals(entity, usuarioEntity);
+        assertEquals(usuarioEntity, entity);
         verify(usuarioRepository).saveAndFlush(usuarioEntity);
         verifyNoMoreInteractions(usuarioRepository);
     }
@@ -128,7 +123,7 @@ public class UsuarioServiceTest {
         when(usuarioRepository.saveAndFlush(usuarioEntity)).thenReturn(usuarioEntity);
         when(usuarioMapper.paraUsuarioResponseDTO(usuarioEntity)).thenReturn(usuarioResponseDTO);
         UsuarioResponseDTO dto = usuarioService.gravarUsuarios(usuarioRequestDTO);
-        assertEquals(dto, usuarioResponseDTO);
+        assertEquals(usuarioResponseDTO, dto);
         verify(usuarioConverter).paraUsuarioEntity(usuarioRequestDTO);
         verify(usuarioRepository).saveAndFlush(usuarioEntity);
         verify(usuarioMapper).paraUsuarioResponseDTO(usuarioEntity);
@@ -176,7 +171,7 @@ public class UsuarioServiceTest {
 
         UsuarioResponseDTO dto = usuarioService.atualizaCadastro(usuarioRequestDTO);
 
-        assertEquals(dto, usuarioResponseDTO);
+        assertEquals(usuarioResponseDTO, dto);
         verify(usuarioRepository).findByEmail(email);
         verify(usuarioUpdateMapper).updateUsuarioFromDTO(usuarioRequestDTO, usuarioEntity);
         verify(usuarioMapper).paraUsuarioResponseDTO(usuarioEntity);
@@ -217,14 +212,14 @@ public class UsuarioServiceTest {
         UsuarioResponseDTO dto = usuarioService.buscaDadosUsuario(email);
         verify(usuarioRepository).findByEmail(email);
         verify(usuarioMapper).paraUsuarioResponseDTO(usuarioEntity);
-        assertEquals(dto, usuarioResponseDTO);
+        assertEquals(usuarioResponseDTO, dto);
     }
 
     @Test
     void deveRetornarNullCasoUsuarioNaoEncontrado(){
         when(usuarioRepository.findByEmail(email)).thenReturn(null);
         UsuarioResponseDTO dto = usuarioService.buscaDadosUsuario(email);
-        assertEquals(dto, null);
+        assertEquals(null, dto);
         verify(usuarioRepository).findByEmail(email);
         verifyNoInteractions(usuarioMapper);
 
